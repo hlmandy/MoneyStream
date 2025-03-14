@@ -102,8 +102,8 @@ with tab1:
             account_df.loc[account_df['AccountName'] == account_name, 'LastModifiedTime'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             
             # 保存更新后的数据
-            save_data(transactions_df, transaction_dir)
-            save_data(account_df, account_dir)
+            save_data(transactions_df, 'Transactions.csv')
+            save_data(account_df, 'Account.csv')
             
             st.success('退款处理成功！')
             # st.rerun()
@@ -203,8 +203,8 @@ with tab2:
                     account_df.loc[account_df['AccountName'] == reimbursement_account, 'LastModifiedTime'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 
                 # 保存更新后的数据
-                save_data(transactions_df, transaction_dir)
-                save_data(account_df, account_dir)
+                save_data(transactions_df, 'Transactions.csv')
+                save_data(account_df, 'Account.csv')
                 
                 st.success('报销处理成功！')
                 # st.rerun()

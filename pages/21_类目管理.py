@@ -71,7 +71,7 @@ with col1:
                     'TransactionType': [new_category_type]
                 })
                 categories_df = pd.concat([categories_df, new_category], ignore_index=True)
-                categories_df.to_csv(categories_dir, index=False)
+                save_data(categories_df, 'Categories.csv')
                 st.success('类别添加成功！')
                 st.rerun()
 
@@ -99,7 +99,7 @@ with col2:
                         'Description': [new_subcategory_desc]
                     })
                     subcategories_df = pd.concat([subcategories_df, new_subcategory], ignore_index=True)
-                    subcategories_df.to_csv(subcategories_dir, index=False)
+                    save_data(subcategories_df, 'Subcategories.csv')
                     st.success('子类别添加成功！')
                     st.rerun()
 
@@ -121,7 +121,7 @@ with col2:
 
 if st.button('删除子类别'):
     # 检查是否存在使用该子类别的交易记录
-    transactions_df = pd.read_csv(transactions_dir)
+    transactions_df = load_transactions_data()
     has_transactions = len(transactions_df[
         (transactions_df['CategoryName'] == delete_parent) & 
         (transactions_df['SubcategoryName'] == delete_subcategory)
@@ -139,8 +139,8 @@ if st.button('删除子类别'):
                                                 (subcategories_df['SubcategoryName'] == delete_subcategory))]
         
         # 保存更改
-        subcategories_df.to_csv(subcategories_dir, index=False)
-        
+        save_data(subcategories_df, 'Subcategories.csv')
+
         st.success(f'已删除子类别 {delete_subcategory}！')
         st.rerun()
 
@@ -149,8 +149,8 @@ if st.session_state.show_undo_delete:
     if st.button('撤销删除操作'):
         if st.session_state.previous_subcategories_df is not None:
             subcategories_df = st.session_state.previous_subcategories_df.copy()
-            subcategories_df.to_csv(subcategories_dir, index=False)
-        
+            save_data(subcategories_df, 'Subcategories.csv')
+
         st.session_state.previous_subcategories_df = None
         st.session_state.show_undo_delete = False
         st.success('已撤销上一次删除操作！')
@@ -185,7 +185,7 @@ if st.button('执行子类别调整'):
         st.error('原子类别和目标子类别不能相同！')
     else:
         # 保存当前状态用于撤销
-        transactions_df = pd.read_csv(transaction_dir)
+        transactions_df = load_transactions_data()
         st.session_state.previous_subcategories_df = subcategories_df.copy()
         st.session_state.show_undo_delete = True
         
@@ -203,8 +203,8 @@ if st.button('执行子类别调整'):
         )]
         
         # 保存更改
-        transactions_df.to_csv(transaction_dir, index=False)
-        subcategories_df.to_csv(subcategories_dir, index=False)
-        
+        save_data(transactions_df, 'Transactions.csv')
+        save_data(subcategories_df, 'Subcategories.csv')
+
         st.success(f'已将子类别 {old_subcategory} 调整为 {new_subcategory}！')
         st.rerun()

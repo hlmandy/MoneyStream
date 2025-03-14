@@ -138,14 +138,14 @@ with st.form('add_account_form'):
                 'LastModifiedTime': [current_time]
             })
             accounts_df = pd.concat([accounts_df, new_account], ignore_index=True)
-            accounts_df.to_csv(account_dir, index=False)
+            save_data(accounts_df, 'Account.csv')
             st.success('账户添加成功！')
             st.rerun()
 
 if st.session_state.show_undo_add:
     if st.button('撤销新增操作'):
         accounts_df = st.session_state.previous_accounts_df.copy()
-        accounts_df.to_csv(account_dir, index=False)
+        save_data(accounts_df, 'Account.csv')
         st.session_state.previous_accounts_df = None
         st.session_state.show_undo_add = False
         st.session_state.show_undo_delete = False
@@ -203,18 +203,18 @@ if edit_account:
                 
                 # 更新交易记录中的账户名称
                 if new_name != edit_account:
-                    transactions_df = pd.read_csv(transaction_dir)
+                    transactions_df = load_transactions_data()
                     transactions_df.loc[transactions_df['AccountName'] == edit_account, 'AccountName'] = new_name
-                    transactions_df.to_csv(transaction_dir, index=False)
+                    save_data(transactions_df, 'Transactions.csv')
 
-                accounts_df.to_csv(account_dir, index=False)
+                save_data(accounts_df, 'Account.csv')
                 st.success('账户信息已更新！')
                 st.rerun()
 
 if st.session_state.show_undo_edit:
     if st.button('撤销修改操作'):
         accounts_df = st.session_state.previous_accounts_df.copy()
-        accounts_df.to_csv(account_dir, index=False)
+        save_data(accounts_df, 'Account.csv')
         st.session_state.previous_accounts_df = None
         st.session_state.show_undo_add = False
         st.session_state.show_undo_delete = False
@@ -237,7 +237,7 @@ if st.button('删除账户'):
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         accounts_df.loc[accounts_df['AccountName'] == delete_account, 'IsValid'] = '否'
         accounts_df.loc[accounts_df['AccountName'] == delete_account, 'LastModifiedTime'] = current_time
-        accounts_df.to_csv(account_dir, index=False)
+        save_data(accounts_df, 'Account.csv')
         st.success(f'账户 {delete_account} 已标记为无效！')
         st.rerun()
     else:
@@ -246,7 +246,7 @@ if st.button('删除账户'):
 if st.session_state.show_undo_delete:
     if st.button('撤销删除操作'):
         accounts_df = st.session_state.previous_accounts_df.copy()
-        accounts_df.to_csv(account_dir, index=False)
+        save_data(accounts_df, 'Account.csv')
         st.session_state.previous_accounts_df = None
         st.session_state.show_undo_add = False
         st.session_state.show_undo_delete = False

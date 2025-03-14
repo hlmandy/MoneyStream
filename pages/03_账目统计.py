@@ -76,7 +76,7 @@ if st.button('保存'):
     updated_transactions_df.loc[
         edited_transactions_df.index, edited_transactions_df.columns] = edited_transactions_df
     updated_transactions_df.reset_index(inplace=True)
-    save_data(updated_transactions_df, transaction_dir)
+    save_data(updated_transactions_df, 'Transactions.csv')
     st.success('交易记录已更新')
 
 # # 按类别汇总金额

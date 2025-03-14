@@ -122,9 +122,9 @@ if not filtered_df.empty:
         updated_transactions_df.loc[
             edited_transactions_df.index, edited_transactions_df.columns] = edited_transactions_df
         updated_transactions_df.reset_index(inplace=True)
-        save_data(updated_transactions_df, transaction_dir)
+        save_data(updated_transactions_df, 'Transactions.csv')
         st.success('交易记录已更新')
-
+        # st.return()
 
 else:
     st.info('没有找到符合条件的交易记录')

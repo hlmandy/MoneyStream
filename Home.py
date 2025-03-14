@@ -29,8 +29,7 @@ with col1:
     filtered_categories = categories_df[categories_df['TransactionType'] == ('收入' if is_income else '支出')]
     category = st.selectbox('类别', filtered_categories['CategoryName'])
     # 根据选择的类别筛选子类别
-    subcategories = pd.read_csv('c:\\Users\\mandy\\hl_Documents\\MoneyStream\\Data\\Subcategories.csv')
-    filtered_subcategories = subcategories[subcategories['ParentCategoryName'] == category]['SubcategoryName'].tolist()
+    filtered_subcategories = subcategories_df[subcategories_df['ParentCategoryName'] == category]['SubcategoryName'].tolist()
     subcategory = st.selectbox('子类别', filtered_subcategories)
 
 with col2:
@@ -78,23 +77,21 @@ if st.button('添加交易'):
         accounts_df.loc[accounts_df['AccountName'] == account, 'Balance'] = \
             (accounts_df.loc[accounts_df['AccountName'] == account, 'Balance'] + balance_change).round(2)
         accounts_df.loc[accounts_df['AccountName'] == account, 'LastModifiedTime'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        accounts_df.to_csv('c:\\Users\\mandy\\hl_Documents\\MoneyStream\\Data\\Account.csv', index=False)
-    
+        save_data(accounts_df, 'Account.csv')
+
     # 添加新交易记录
     transactions_df = pd.concat([new_transaction, transactions_df], ignore_index=True)
-    transactions_df.to_csv('c:\\Users\\mandy\\hl_Documents\\MoneyStream\\Data\\Transactions.csv', index=False)
+    save_data(transactions_df, 'Transactions.csv')
     st.success('交易已添加！')
-    # st.experimental_rerun()
 
 # 显示撤销按钮
 if st.session_state.show_undo:
     if st.button('撤销上一次添加'):
         transactions_df = st.session_state.previous_transactions_df.copy()
-        transactions_df.to_csv('c:\\Users\\mandy\\hl_Documents\\MoneyStream\\Data\\Transactions.csv', index=False)
+        save_data(transactions_df, 'Transactions.csv')
         st.session_state.previous_transactions_df = None
         st.session_state.show_undo = False
         st.success('已撤销上一次添加操作！')
-        # st.experimental_rerun()
 
 st.header('新增转账')
 is_transfer_backdated = st.checkbox('是否为补记', value=False, key='is_transfer_backdated')
@@ -163,11 +160,9 @@ if st.button('确认转账'):
             accounts_df.loc[accounts_df['AccountName'] == to_account, 'Balance'] += transfer_amount
             accounts_df.loc[accounts_df['AccountName'] == from_account, 'LastModifiedTime'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             accounts_df.loc[accounts_df['AccountName'] == to_account, 'LastModifiedTime'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            accounts_df.to_csv('c:\\Users\\mandy\\hl_Documents\\MoneyStream\\Data\\Account.csv', index=False)
-        
+            save_data(accounts_df, 'Account.csv')
+
         # 添加转出和转入两笔交易记录
         transactions_df = pd.concat([transactions_df, transfer_out, transfer_in], ignore_index=True)
-        transactions_df.to_csv('c:\\Users\\mandy\\hl_Documents\\MoneyStream\\Data\\Transactions.csv', index=False)
+        save_data(transactions_df, 'Transactions.csv')
         st.success('转账成功！')
-        # st.experimental_rerun()
-
